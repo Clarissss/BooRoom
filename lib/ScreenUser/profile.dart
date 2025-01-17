@@ -50,14 +50,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-   Future<void> _updateUserImage(String newImagePath) async {
+  Future<void> _updateUserImage(String newImagePath) async {
     if (user['_id'] == null) {
       _showSnackBar('Cannot update image: User ID is missing', isError: true);
       return;
     }
 
     try {
-      // Validate all required parameters before making the API call
       if (token == null || token.isEmpty) {
         throw Exception('Authentication token is missing');
       }
@@ -70,7 +69,6 @@ class _ProfilePageState extends State<ProfilePage> {
         throw Exception('App ID is missing');
       }
 
-      
       final response = await ds.updateId(
         'user_img',
         newImagePath,
@@ -78,10 +76,9 @@ class _ProfilePageState extends State<ProfilePage> {
         project,
         'user',
         appid,
-        user['_id'].toString(), 
+        user['_id'].toString(),
       );
 
-      // Check if the response indicates success
       if (response == null) {
         throw Exception('Server returned null response');
       }
@@ -132,6 +129,112 @@ class _ProfilePageState extends State<ProfilePage> {
       _showSnackBar('Error picking image: $e', isError: true);
     }
     return null;
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          child: Container(
+            padding: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              shape: BoxShape.rectangle,
+              borderRadius: BorderRadius.circular(20),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 10.0,
+                  offset: Offset(0.0, 10.0),
+                ),
+              ],
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Colors.red[50],
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    Icons.logout,
+                    color: Colors.red[400],
+                    size: 40,
+                  ),
+                ),
+                SizedBox(height: 20),
+                Text(
+                  'Logout Confirmation',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                SizedBox(height: 15),
+                Text(
+                  'Are you sure you want to logout?',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: 25),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: Text(
+                        'Cancel',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 20),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.pop(context); // Close dialog
+                        Navigator.pushReplacementNamed(context, 'login_screen');
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red[400],
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 12,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                      child: Text(
+                        'Logout',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   Widget _errorWidget(String message) {
@@ -351,9 +454,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: double.infinity,
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushReplacementNamed(context, 'login_screen');
-                      },
+                      onPressed: () => _showLogoutDialog(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.red[400],
                         foregroundColor: Colors.white,
