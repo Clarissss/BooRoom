@@ -23,6 +23,73 @@ class _HomeScreenState extends State<HomeScreen> {
   late String userName;
   List<NotifikasiModel> notifications = [];
 
+  void _showSuccessDialog(BuildContext context, String title, String message) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (BuildContext context) {
+      return Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          padding: EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.green.shade50,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check_circle_outline,
+                  size: 48,
+                  color: Colors.green,
+                ),
+              ),
+              SizedBox(height: 16),
+              Text(
+                title,
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 8),
+              Text(
+                message,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey[600],
+                ),
+                textAlign: TextAlign.center,
+              ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                child: Text('OK'),
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
+
   @override
   void initState() {
     super.initState();
@@ -285,70 +352,68 @@ Widget _buildConfirmationDetail(String label, String value, IconData icon) {
                                         ),
                                       ),
                                       ElevatedButton(
-                                        onPressed: () async {
-                                          Navigator.pop(context); // Close confirmation dialog
-                                          try {
-                                            final user = userName;
+onPressed: () async {
+  Navigator.pop(context); // Close confirmation dialog
+  try {
+    final user = userName;
 
-                                            bool isAvailable = await checkRoomAvailability(
-                                              formData['room'],
-                                              formData['date'],
-                                              formData['start_time'],
-                                            );
+    bool isAvailable = await checkRoomAvailability(
+      formData['room'],
+      formData['date'],
+      formData['start_time'],
+    );
 
-                                            if (!isAvailable) {
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text(
-                                                    "Room ${formData['room']} is already booked for ${formData['date']} at ${formData['start_time']}!"),
-                                                  backgroundColor: Colors.red,
-                                                  duration: Duration(seconds: 3),
-                                                ),
-                                              );
-                                              return;
-                                            }
+    if (!isAvailable) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Room ${formData['room']} is already booked for ${formData['date']} at ${formData['start_time']}!"),
+          backgroundColor: Colors.red,
+          duration: Duration(seconds: 3),
+        ),
+      );
+      return;
+    }
 
-                                            DataService ds = DataService();
-                                            List response = jsonDecode(await ds.insertPendingBookingProdi(
-                                              appid,
-                                              formData['date'],
-                                              formData['start_time'],
-                                              formData['end_time'],
-                                              formData['status'],
-                                              formData['desc'],
-                                              formData['room'],
-                                              formData['capacity'],
-                                              user,
-                                            ));
+    DataService ds = DataService();
+    List response = jsonDecode(await ds.insertPendingBookingProdi(
+      appid,
+      formData['date'],
+      formData['start_time'],
+      formData['end_time'],
+      formData['status'],
+      formData['desc'],
+      formData['room'],
+      formData['capacity'],
+      user,
+    ));
 
-                                            if (response.isNotEmpty) {
-                                              Navigator.of(context).pop();
-                                              ScaffoldMessenger.of(context).showSnackBar(
-                                                SnackBar(
-                                                  content: Text("Booking saved successfully!"),
-                                                  backgroundColor: Colors.green,
-                                                  duration: Duration(seconds: 3),
-                                                ),
-                                              );
-                                              Navigator.pushReplacement(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      HomeScreen(userData: widget.userData),
-                                                ),
-                                              );
-                                            }
-                                          } catch (e) {
-                                            print("Error: $e");
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text("Failed to save booking!"),
-                                                backgroundColor: Colors.red,
-                                                duration: Duration(seconds: 3),
-                                              ),
-                                            );
-                                          }
-                                        },
+    if (response.isNotEmpty) {
+      Navigator.of(context).pop(); // Close booking form
+      _showSuccessDialog(
+        context,
+        'Booking Successful!',
+        'Your room booking has been successfully submitted and is awaiting approval.',
+      );
+      await Future.delayed(Duration(seconds: 2));
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => HomeScreen(userData: widget.userData),
+        ),
+      );
+    }
+  } catch (e) {
+    print("Error: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Failed to save booking!"),
+        backgroundColor: Colors.red,
+        duration: Duration(seconds: 3),
+      ),
+    );
+  }
+},
                                         child: Text('Confirm Booking'),
                                         style: ElevatedButton.styleFrom(
                                           backgroundColor: Colors.cyan[700],
@@ -693,7 +758,6 @@ class _NotificationDialogState extends State<NotificationDialog> {
       });
     }
   }
-
   String _getTimeAgo(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
