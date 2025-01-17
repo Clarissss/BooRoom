@@ -152,17 +152,10 @@ class _RegisterPageState extends State<RegisterPage>
                               width: 100,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black12,
-                                    blurRadius: 15,
-                                    offset: Offset(0, 5),
-                                  ),
-                                ],
                               ),
                               child: ClipOval(
                                 child: Image.asset(
-                                  'assets/flutter.png',
+                                  'BooRoom.png',
                                   fit: BoxFit.cover,
                                 ),
                               ),
