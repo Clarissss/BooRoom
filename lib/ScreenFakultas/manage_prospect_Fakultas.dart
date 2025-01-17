@@ -417,64 +417,105 @@ class _ManageProspectFakultasPageState
     );
   }
 
-  void _updateStatus(int index, String newStatus, {String reason = ''}) async {
-    String updateField = 'status';
-    String updateValue = newStatus;
-    String id = _prospects[index].id;
-    String startTime = _prospects[index].start_time;
-    String date = _prospects[index].date;
-    String endTime = _prospects[index].end_time;
-    String desc = _prospects[index].desc;
-    String room = _prospects[index].room;
-    String capacity = _prospects[index].capacity.toString();
-    String user = _prospects[index].user;
-    String notifiactionTitle = 'Booking Canceled';
-    String statCancel = 'Rejected By Fakultas';
-    String statApprove = 'Approved By Fakultas';
+    void _updateStatus(int index, String newStatus, {String reason = ''}) async {
+  String updateField = 'status';
+  String updateValue = newStatus;
+  String id = _prospects[index].id;
+  String startTime = _prospects[index].start_time;
+  String date = _prospects[index].date;
+  String endTime = _prospects[index].end_time;
+  String desc = _prospects[index].desc;
+  String room = _prospects[index].room;
+  String capacity = _prospects[index].capacity.toString();
+  String user = _prospects[index].user;
+  String notifiactionTitle = 'Booking Canceled';
+  String statCancel = 'Rejected By Fakultas';
+  String statApprove = 'Approved By Fakultas';
+  String statusField = 'stat2';
+  String statusValue = statCancel;
+  String statusValue2 = statApprove;
 
-    try {
+  try {
+ print('Looking for booking with details:');
+      print('Date: ${_prospects[index].date}');
+      print('Start Time: ${_prospects[index].start_time}');
+      print('End Time: ${_prospects[index].end_time}');
+      print('Room: ${_prospects[index].room}');
+      print('User: ${_prospects[index].user}');
+
       BookingModel? matchingBooking = findMatchingBooking(_prospects[index]);
-
+      
       if (matchingBooking == null) {
+        print('No matching booking found for prospect');
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: No matching booking found')),
         );
         return;
       }
 
-      bool success = await ds.updateId(
-        updateField,
-        newStatus,
-        token,
-        project,
-        'pending_booking_fakultas',
-        appid,
-        id,
-      );
+      // Debug print to confirm matching booking
+      print('Found matching booking with ID: ${matchingBooking.id}');
 
-      if (success) {
-        if (newStatus == 'Approved') {
-          final String resetStatus = 'Pending';
-          await ds.insertPendingBooking(
-            appid,
-            date,
-            startTime,
-            endTime,
-            resetStatus,
-            desc,
-            room,
-            capacity,
-            user,
-          );
-        } else if (newStatus == 'Canceled') {
-          await ds.insertNotifikasi(
-            appid,
-            user,
-            reason,
-            notifiactionTitle,
-          );
-        }
+    bool success = await ds.updateId(
+      updateField,
+      newStatus,
+      token,
+      project,  
+      'pending_booking_fakultas',
+      appid,
+      id,
+    );
 
+    if (success) {
+      if (newStatus == 'Approved') {
+        final String resetStatus = 'Pending';
+        await ds.insertPendingBooking(
+          appid,
+          date,
+          startTime,
+          endTime,
+          resetStatus,
+          desc,
+          room,
+          capacity,
+          user,
+        );
+          await ds.updateId(
+            'stat2',
+            statApprove,
+            token,
+            project,
+            'booking',
+            appid,
+            matchingBooking.id,
+          );
+      } else if (newStatus == 'Canceled') {
+        await ds.insertNotifikasi(
+          appid,
+          user,
+          reason,
+          notifiactionTitle,
+        );
+          await ds.updateId(
+            'stat2',
+            statCancel,
+            token,
+            project,
+            'booking',
+            appid,
+            matchingBooking.id,
+          );
+          
+          await ds.updateId(
+            'status',
+            newStatus,
+            token,
+            project,
+            'booking',
+            appid,
+            matchingBooking.id,
+          );
+      }
         setState(() {
           _prospects[index].status = newStatus;
         });
