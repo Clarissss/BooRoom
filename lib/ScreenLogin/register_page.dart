@@ -145,22 +145,6 @@ class _RegisterPageState extends State<RegisterPage>
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Column(
                         children: [
-                          Hero(
-                            tag: 'logo',
-                            child: Container(
-                              height: 100,
-                              width: 100,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'BooRoom.png',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
                           SizedBox(height: 20),
                           Text(
                             'Create Account',

@@ -10,10 +10,14 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(MyApp());
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    print('Firebase initialization error: $e');
+  }
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -34,12 +38,12 @@ class MyApp extends StatelessWidget {
       },
       onGenerateRoute: (settings) {
         if (settings.name == 'home_screen') {
-          final String userData = settings.arguments as String; // Get userData from arguments
+          final String userData = settings.arguments as String;
           return MaterialPageRoute(
-            builder: (context) => HomeScreen(userData: userData), // Pass userData
+            builder: (context) => HomeScreen(userData: userData),
           );
         }
-        return null; // Handle other routes normally
+        return null;
       },
     );
   }

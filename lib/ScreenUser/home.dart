@@ -23,113 +23,46 @@ class _HomeScreenState extends State<HomeScreen> {
   late String userName;
   List<NotifikasiModel> notifications = [];
 
-  void _showSuccessDialog(BuildContext context, String title, String message) {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                padding: EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_outline,
-                  size: 48,
-                  color: Colors.green,
-                ),
-              ),
-              SizedBox(height: 16),
-              Text(
-                title,
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 8),
-              Text(
-                message,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey[600],
-                ),
-                textAlign: TextAlign.center,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
-                  foregroundColor: Colors.white,
-                  padding: EdgeInsets.symmetric(horizontal: 30, vertical: 12),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: Text('OK'),
-              ),
-            ],
-          ),
-        ),
-      );
-    },
-  );
-}
-
   @override
   void initState() {
     super.initState();
     _loadUserData();
     _loadNotifications();
-    NotificationBadge;
   }
 
-Widget _buildConfirmationDetail(String label, String value, IconData icon) {
-  return Padding(
-    padding: const EdgeInsets.only(bottom: 12),
-    child: Row(
-      children: [
-        Icon(icon, size: 20, color: Colors.cyan[700]),
-        SizedBox(width: 12),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: Colors.grey[600],
-                  fontSize: 12,
+  Widget _buildConfirmationDetail(String label, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          Icon(icon, size: 20, color: Colors.cyan[700]),
+          SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.grey[600],
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-              Text(
-                value,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                Text(
+                  value,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
-    ),
-  );
-}
+        ],
+      ),
+    );
+  }
+
   Future<void> _loadNotifications() async {
     try {
       String token = '675bbd40f853312de55091c5';
@@ -137,7 +70,7 @@ Widget _buildConfirmationDetail(String label, String value, IconData icon) {
       String collection = 'notifikasi';
       String appid = '675dc0a8f853312de550921e';
       String whereField = 'user';
-      
+
       List<dynamic> userDataJson = [];
       try {
         userDataJson = jsonDecode(widget.userData);
@@ -158,9 +91,9 @@ Widget _buildConfirmationDetail(String label, String value, IconData icon) {
       }
 
       DataService ds = DataService();
-      
+
       String? response = await ds.selectWhere(token, project, collection, appid, whereField, whereValue);
-      
+
       if (response == null || response.isEmpty) {
         print('No notifications found or empty response');
         setState(() {
@@ -233,216 +166,194 @@ Widget _buildConfirmationDetail(String label, String value, IconData icon) {
     );
   }
 
-  void _showBookingFormDialog() {
-  showDialog(
-    context: context,
-    barrierDismissible: false,
-    builder: (BuildContext context) {
-      return Dialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Container(
-          constraints: BoxConstraints(maxHeight: MediaQuery.of(context).size.height * 0.8),
-          padding: EdgeInsets.all(16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Booking Ruanganmu',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
+void _showBookingFormDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return Dialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            constraints: BoxConstraints(maxHeight: MediaQuery.of(dialogContext).size.height * 0.8),
+            padding: EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Booking Ruanganmu',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
-                  IconButton(
-                    icon: Icon(Icons.close),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-              Divider(),
-              Expanded(
-                child: SingleChildScrollView(
-                  child: BookingForm(
-                    userData: widget.userData,
-                    onSubmit: (formData) async {
-                      // Show confirmation dialog first
-                      showDialog(
-                        context: context,
-                        barrierDismissible: false,
-                        builder: (BuildContext context) {
-                          return Dialog(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Container(
-                              padding: EdgeInsets.all(20),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Container(
-                                    padding: EdgeInsets.all(16),
-                                    decoration: BoxDecoration(
-                                      color: Colors.cyan.shade50,
-                                      borderRadius: BorderRadius.circular(12),
-                                    ),
-                                    child: Column(
-                                      children: [
-                                        Icon(
-                                          Icons.info_outline,
-                                          size: 48,
-                                          color: Colors.cyan[700],
-                                        ),
-                                        SizedBox(height: 16),
-                                        Text(
-                                          'Konfirmasi Booking',
-                                          style: TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
+                    IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () => Navigator.of(dialogContext).pop(),
+                    ),
+                  ],
+                ),
+                Divider(),
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: BookingForm(
+                      userData: widget.userData,
+                      onSubmit: (formData) async {
+                        final innerContext = dialogContext;
+
+                        // Show confirmation dialog first
+                        showDialog(
+                          context: innerContext,
+                          barrierDismissible: false,
+                          builder: (BuildContext confirmationContext) {
+                            return Dialog(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Container(
+                                padding: EdgeInsets.all(20),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                      padding: EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.cyan.shade50,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Icon(
+                                            Icons.info_outline,
+                                            size: 48,
                                             color: Colors.cyan[700],
+                                          ),
+                                          SizedBox(height: 16),
+                                          Text(
+                                            'Konfirmasi Booking',
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.cyan[700],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 20),
+                                    _buildConfirmationDetail('Room', formData['room'] ?? '', Icons.meeting_room),
+                                    _buildConfirmationDetail('Date', formData['date'] ?? '', Icons.calendar_today),
+                                    _buildConfirmationDetail('Start Time', formData['start_time'] ?? '', Icons.access_time),
+                                    _buildConfirmationDetail('End Time', formData['end_time'] ?? '', Icons.access_time_filled),
+                                    _buildConfirmationDetail('Capacity', formData['capacity'] ?? '', Icons.people),
+                                    _buildConfirmationDetail('Description', formData['desc'] ?? '', Icons.description),
+                                    SizedBox(height: 24),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(confirmationContext),
+                                          child: Text('Cancel'),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: Colors.grey[600],
+                                          ),
+                                        ),
+                                        ElevatedButton(
+                                          onPressed: () async {
+                                            Navigator.pop(confirmationContext); // Close confirmation dialog
+                                            try {
+                                              final user = userName;
+
+                                              bool isAvailable = await checkRoomAvailability(
+                                                formData['room'],
+                                                formData['date'],
+                                                formData['start_time'],
+                                              );
+
+                                              if (!isAvailable) {
+                                                if (innerContext.mounted) {
+                                                  ScaffoldMessenger.of(innerContext).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text(
+                                                        "Room ${formData['room']} is already booked!",
+                                                      ),
+                                                      backgroundColor: Colors.red,
+                                                      duration: Duration(seconds: 3),
+                                                    ),
+                                                  );
+                                                }
+                                                return;
+                                              }
+
+                                              DataService ds = DataService();
+                                              List response = jsonDecode(await ds.insertPendingBookingProdi(
+                                                appid,
+                                                formData['date'],
+                                                formData['start_time'],
+                                                formData['end_time'],
+                                                formData['status'],
+                                                formData['desc'],
+                                                formData['room'],
+                                                formData['capacity'],
+                                                user,
+                                              ));
+
+                                              if (response.isNotEmpty) {
+                                                Navigator.of(innerContext).pop(); // Close dialog
+                                                if (innerContext.mounted) {
+                                                  ScaffoldMessenger.of(innerContext).showSnackBar(
+                                                    SnackBar(
+                                                      content: Text("Booking saved successfully!"),
+                                                      backgroundColor: Colors.green,
+                                                      duration: Duration(seconds: 3),
+                                                    ),
+                                                  );
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) => HomeScreen(userData: widget.userData),
+                                                    ),
+                                                  );
+                                                }
+                                              }
+                                            } catch (e) {
+                                              print("Error: $e");
+                                            }
+                                          },
+                                          child: Text('Confirm Booking'),
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.cyan[700],
+                                            foregroundColor: Colors.white,
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 24,
+                                              vertical: 12,
+                                            ),
                                           ),
                                         ),
                                       ],
                                     ),
-                                  ),
-                                  SizedBox(height: 20),
-                                  _buildConfirmationDetail(
-                                    'Room',
-                                    formData['room'] ?? '',
-                                    Icons.meeting_room,
-                                  ),
-                                  _buildConfirmationDetail(
-                                    'Date',
-                                    formData['date'] ?? '',
-                                    Icons.calendar_today,
-                                  ),
-                                  _buildConfirmationDetail(
-                                    'Start Time',
-                                    formData['start_time'] ?? '',
-                                    Icons.access_time,
-                                  ),
-                                  _buildConfirmationDetail(
-                                    'End Time',
-                                    formData['end_time'] ?? '',
-                                    Icons.access_time_filled,
-                                  ),
-                                  _buildConfirmationDetail(
-                                    'Capacity',
-                                    formData['capacity'] ?? '',
-                                    Icons.people,
-                                  ),
-                                  _buildConfirmationDetail(
-                                    'Description',
-                                    formData['desc'] ?? '',
-                                    Icons.description,
-                                  ),
-                                  SizedBox(height: 24),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextButton(
-                                        onPressed: () => Navigator.pop(context),
-                                        child: Text('Cancel'),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: Colors.grey[600],
-                                        ),
-                                      ),
-                                      ElevatedButton(
-onPressed: () async {
-  Navigator.pop(context); // Close confirmation dialog
-  try {
-    final user = userName;
-
-    bool isAvailable = await checkRoomAvailability(
-      formData['room'],
-      formData['date'],
-      formData['start_time'],
-    );
-
-    if (!isAvailable) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            "Room ${formData['room']} is already booked for ${formData['date']} at ${formData['start_time']}!"),
-          backgroundColor: Colors.red,
-          duration: Duration(seconds: 3),
-        ),
-      );
-      return;
-    }
-
-    DataService ds = DataService();
-    List response = jsonDecode(await ds.insertPendingBookingProdi(
-      appid,
-      formData['date'],
-      formData['start_time'],
-      formData['end_time'],
-      formData['status'],
-      formData['desc'],
-      formData['room'],
-      formData['capacity'],
-      user,
-    ));
-
-    if (response.isNotEmpty) {
-      Navigator.of(context).pop(); // Close booking form
-      _showSuccessDialog(
-        context,
-        'Booking Successful!',
-        'Your room booking has been successfully submitted and is awaiting approval.',
-      );
-      await Future.delayed(Duration(seconds: 2));
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HomeScreen(userData: widget.userData),
-        ),
-      );
-    }
-  } catch (e) {
-    print("Error: $e");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text("Failed to save booking!"),
-        backgroundColor: Colors.red,
-        duration: Duration(seconds: 3),
-      ),
-    );
-  }
-},
-                                        child: Text('Confirm Booking'),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.cyan[700],
-                                          foregroundColor: Colors.white,
-                                          padding: EdgeInsets.symmetric(
-                                            horizontal: 24,
-                                            vertical: 12,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    },
+                            );
+                          },
+                        );
+                      },
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      );
-    },
-  );
-}
+        );
+      },
+    );
+  }
+  
 
   int get _unreadNotificationCount {
     return notifications.length;
@@ -579,15 +490,8 @@ onPressed: () async {
                       ),
                       const SizedBox(height: 10),
                       Expanded(
-                        child: SingleChildScrollView(
-                          child: Wrap(
-                            spacing: 16,
-                            runSpacing: 16,
-                            children: [
+                        child: 
                               RoomSelectionCard(),
-                            ],
-                          ),
-                        ),
                       ),
                     ],
                   ),
@@ -724,7 +628,6 @@ class _NotificationDialogState extends State<NotificationDialog> {
   }
 
   Future<void> _loadNotifications() async {
-    // Logic to reload notifications after deletion
     try {
       String token = '675bbd40f853312de55091c5';
       String project = 'uas';
@@ -758,13 +661,14 @@ class _NotificationDialogState extends State<NotificationDialog> {
       });
     }
   }
+
   String _getTimeAgo(DateTime timestamp) {
     final now = DateTime.now();
     final difference = now.difference(timestamp);
 
     if (difference.inDays > 0) {
       return '${difference.inDays}d ago';
-    } else if (difference.inHours > 0) {
+    }else if (difference.inHours > 0) {
       return '${difference.inHours}h ago';
     } else if (difference.inMinutes > 0) {
       return '${difference.inMinutes}m ago';
