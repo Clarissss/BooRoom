@@ -15,7 +15,8 @@ class LoginScreen extends StatefulWidget {
   _LoginScreenState createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStateMixin {
+class _LoginScreenState extends State<LoginScreen>
+    with SingleTickerProviderStateMixin {
   late String email;
   late String password;
   final _formKey = GlobalKey<FormState>();
@@ -44,9 +45,10 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     super.dispose();
   }
 
-  Future<String> fetchUserData(String token, String project, String collection, 
+  Future<String> fetchUserData(String token, String project, String collection,
       String appid, String whereField, String whereValue) async {
-    String uri = 'https://io.etter.cloud/v4/select_where/token/$token/project/$project/collection/$collection/appid/$appid/where_field/$whereField/where_value/$whereValue';
+    String uri =
+        'https://io.etter.cloud/v4/select_where/token/$token/project/$project/collection/$collection/appid/$appid/where_field/$whereField/where_value/$whereValue';
 
     try {
       final response = await http.get(Uri.parse(uri));
@@ -75,7 +77,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         String appid = '675dc0a8f853312de550921e';
         String whereField = 'email';
         String whereValue = email;
-        String userData = await fetchUserData(token, project, collection, appid, whereField, whereValue);
+        String userData = await fetchUserData(
+            token, project, collection, appid, whereField, whereValue);
 
         const manualAccounts = [
           {
@@ -101,7 +104,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
         ];
 
         final userRole = manualAccounts.firstWhere(
-          (account) => account['email'] == email && account['password'] == password,
+          (account) =>
+              account['email'] == email && account['password'] == password,
           orElse: () => {},
         );
 
@@ -121,18 +125,21 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           } else if (userRole['role'] == 'Fakultas') {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ManageProspectFakultasPage()),
+              MaterialPageRoute(
+                  builder: (context) => ManageProspectFakultasPage()),
             );
           } else if (userRole['role'] == 'Prodi') {
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (context) => ManageProspectDosenPage()),
+              MaterialPageRoute(
+                  builder: (context) => ManageProspectDosenPage()),
             );
           }
         } else {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => ProfilePage(userData: userData)),
+            MaterialPageRoute(
+                builder: (context) => ProfilePage(userData: userData)),
           );
         }
       } catch (e) {
@@ -248,14 +255,16 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 if (value == null || value.isEmpty) {
                                   return 'Please enter your email';
                                 }
-                                if (!RegExp(r'^[^@]+@(mhs\.)?itenas\.ac\.id$').hasMatch(value)) {
+                                if (!RegExp(r'^[^@]+@(mhs\.)?itenas\.ac\.id$')
+                                    .hasMatch(value)) {
                                   return 'Invalid Email';
                                 }
                                 return null;
                               },
                               decoration: InputDecoration(
                                 hintText: 'Email',
-                                prefixIcon: Icon(Icons.email_outlined, color: Colors.cyan),
+                                prefixIcon: Icon(Icons.email_outlined,
+                                    color: Colors.cyan),
                                 filled: true,
                                 fillColor: Colors.white,
                                 border: OutlineInputBorder(
@@ -268,15 +277,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.cyan, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.cyan, width: 1),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.red, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.red, width: 1),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.red, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.red, width: 1),
                                 ),
                               ),
                             ),
@@ -309,10 +321,13 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                               },
                               decoration: InputDecoration(
                                 hintText: 'Password',
-                                prefixIcon: Icon(Icons.lock_outline, color: Colors.cyan),
+                                prefixIcon: Icon(Icons.lock_outline,
+                                    color: Colors.cyan),
                                 suffixIcon: IconButton(
                                   icon: Icon(
-                                    _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
                                     color: Colors.cyan,
                                   ),
                                   onPressed: () {
@@ -333,15 +348,18 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.cyan, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.cyan, width: 1),
                                 ),
                                 errorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.red, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.red, width: 1),
                                 ),
                                 focusedErrorBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.red, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.red, width: 1),
                                 ),
                               ),
                             ),
@@ -386,6 +404,7 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                             : Text(
                                 'Login',
                                 style: TextStyle(
+                                  color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -399,7 +418,8 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => RegisterPage()),
+                          MaterialPageRoute(
+                              builder: (context) => RegisterPage()),
                         );
                       },
                       child: RichText(

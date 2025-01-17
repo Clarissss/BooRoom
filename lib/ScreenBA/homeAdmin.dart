@@ -88,7 +88,7 @@ class AdminDashboard extends StatelessWidget {
                         _buildManageCard(context, 'Manage Rooms',
                             Icons.meeting_room, RoomPage()),
                         _buildManageCard(context, 'Data Booking',
-                            Icons.assignment, JadwalPage()),
+                            Icons.assignment, JadwalPage(userData: '')),
                         _buildManageCard(context, 'Data Prospective',
                             Icons.schedule, ProspectPage()),
                       ],
@@ -104,7 +104,8 @@ class AdminDashboard extends StatelessWidget {
         onPressed: () {
           _logout(context);
         },
-        child: Icon(Icons.logout),
+        child: Icon(Icons.logout,
+            color: Colors.white), // Ubah warna ikon menjadi putih
         backgroundColor: Colors.redAccent,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,

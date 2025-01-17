@@ -13,7 +13,8 @@ class RegisterPage extends StatefulWidget {
   _RegisterPageState createState() => _RegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderStateMixin {
+class _RegisterPageState extends State<RegisterPage>
+    with SingleTickerProviderStateMixin {
   late String name;
   late String email;
   late String password;
@@ -51,7 +52,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
       setState(() => isLoading = true);
       try {
         // Create user in Firebase Auth
-        UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
+        UserCredential userCredential =
+            await _auth.createUserWithEmailAndPassword(
           email: email,
           password: password,
         );
@@ -86,9 +88,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
 
         // Decode the response
         List<dynamic> decodedResponse = jsonDecode(response);
-        List<UserModel> users = decodedResponse
-            .map((e) => UserModel.fromJson(e))
-            .toList();
+        List<UserModel> users =
+            decodedResponse.map((e) => UserModel.fromJson(e)).toList();
 
         setState(() => isLoading = false);
 
@@ -225,7 +226,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                               value: role,
                               hint: Text('Select Role'),
                               decoration: InputDecoration(
-                                prefixIcon: Icon(Icons.work_outline, color: Colors.cyan),
+                                prefixIcon: Icon(Icons.work_outline,
+                                    color: Colors.cyan),
                                 border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
                                   borderSide: BorderSide.none,
@@ -236,7 +238,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                                 ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  borderSide: BorderSide(color: Colors.cyan, width: 1),
+                                  borderSide:
+                                      BorderSide(color: Colors.cyan, width: 1),
                                 ),
                               ),
                               items: ['Dosen', 'Mahasiswa']
@@ -270,7 +273,8 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                               if (value == null || value.isEmpty) {
                                 return 'Please enter your email';
                               }
-                              if (!RegExp(r'^[^@]+@(mhs\.)?itenas\.ac\.id$').hasMatch(value)) {
+                              if (!RegExp(r'^[^@]+@(mhs\.)?itenas\.ac\.id$')
+                                  .hasMatch(value)) {
                                 return 'Invalid Email';
                               }
                               return null;
@@ -291,14 +295,18 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                               if (value.length < 8) {
                                 return 'Password must be at least 8 characters';
                               }
-                              if (!RegExp(r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$').hasMatch(value)) {
+                              if (!RegExp(
+                                      r'^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$')
+                                  .hasMatch(value)) {
                                 return 'Password must contain letters and numbers';
                               }
                               return null;
                             },
                             suffixIcon: IconButton(
                               icon: Icon(
-                                _obscurePassword ? Icons.visibility_off : Icons.visibility,
+                                _obscurePassword
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
                                 color: Colors.cyan,
                               ),
                               onPressed: () {
@@ -348,6 +356,7 @@ class _RegisterPageState extends State<RegisterPage> with SingleTickerProviderSt
                             : Text(
                                 'Register',
                                 style: TextStyle(
+                                  color: Colors.white,
                                   fontSize: 18,
                                   fontWeight: FontWeight.bold,
                                 ),
