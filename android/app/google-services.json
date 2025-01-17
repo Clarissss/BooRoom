@@ -1,13 +1,71 @@
 {
   "project_info": {
-    "project_number": "904039607003",
-    "project_id": "uasmantap-6eb99",
-    "storage_bucket": "uasmantap-6eb99.firebasestorage.app"
+    "project_number": "623418869958",
+    "firebase_url": "https://bookingroom-keld-default-rtdb.firebaseio.com",
+    "project_id": "bookingroom-keld",
+    "storage_bucket": "bookingroom-keld.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:904039607003:android:f65af7999f194bac353afe",
+        "mobilesdk_app_id": "1:623418869958:android:a1dcc8ec92993ed0d86fc7",
+        "android_client_info": {
+          "package_name": "com.bookingroom.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7fMlPIbvKnVmj2Y7sBEeorhTK9lM5IHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623418869958:android:a1b81f9337f6cd06d86fc7",
+        "android_client_info": {
+          "package_name": "com.boroom.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7fMlPIbvKnVmj2Y7sBEeorhTK9lM5IHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623418869958:android:49584612a25ccdf9d86fc7",
+        "android_client_info": {
+          "package_name": "com.example.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7fMlPIbvKnVmj2Y7sBEeorhTK9lM5IHA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:623418869958:android:e3aab2ae6ab469abd86fc7",
         "android_client_info": {
           "package_name": "com.example.bookingroom"
         }
@@ -15,7 +73,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyBaGY0zb5ahVgQ_oAnHp9oKHLY4Wy1LdiM"
+          "current_key": "AIzaSyA7fMlPIbvKnVmj2Y7sBEeorhTK9lM5IHA"
         }
       ],
       "services": {

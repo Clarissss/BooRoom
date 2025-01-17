@@ -186,22 +186,6 @@ class _LoginScreenState extends State<LoginScreen>
                       padding: EdgeInsets.symmetric(vertical: 20),
                       child: Column(
                         children: [
-                          Hero(
-                            tag: 'logo',
-                            child: Container(
-                              height: 200,
-                              width: 200,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                              ),
-                              child: ClipOval(
-                                child: Image.asset(
-                                  'BooRoom.png',
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                          ),
                           SizedBox(height: 20),
                           Text(
                             'Welcome Back!',
