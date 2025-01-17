@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "904039607003",
+    "project_id": "uasmantap-6eb99",
+    "storage_bucket": "uasmantap-6eb99.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:904039607003:android:f65af7999f194bac353afe",
+        "android_client_info": {
+          "package_name": "com.example.bookingroom"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaGY0zb5ahVgQ_oAnHp9oKHLY4Wy1LdiM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
