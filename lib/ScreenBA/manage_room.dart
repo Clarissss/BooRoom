@@ -145,7 +145,8 @@ class _RoomPageState extends State<RoomPage> {
                           TextButton.icon(
                             icon: Icon(Icons.edit),
                             label: Text('Edit'),
-                            onPressed: () => _showAddRoomDialog(roomToEdit: room),
+                            onPressed: () =>
+                                _showAddRoomDialog(roomToEdit: room),
                           ),
                           SizedBox(width: 8),
                           TextButton.icon(
@@ -310,7 +311,7 @@ class _RoomPageState extends State<RoomPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.grey[100],
+        color: Colors.grey[900],
         child: Column(
           children: [
             // App Bar
@@ -383,9 +384,8 @@ class _RoomPageState extends State<RoomPage> {
                       : ListView.builder(
                           padding: EdgeInsets.only(top: 8, bottom: 80),
                           itemCount: rooms
-                              .where((room) => room.name
-                                  .toLowerCase()
-                                  .contains(searchQuery))
+                              .where((room) =>
+                                  room.name.toLowerCase().contains(searchQuery))
                               .length,
                           itemBuilder: (context, index) {
                             final filteredRooms = rooms
@@ -400,23 +400,34 @@ class _RoomPageState extends State<RoomPage> {
           ],
         ),
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      floatingActionButton: Stack(
         children: [
-          FloatingActionButton(
-            heroTag: 'add_button',
-            onPressed: () => _showAddRoomDialog(),
-            backgroundColor: Colors.green,
-            child: Icon(Icons.add, color: Colors.white),
-            tooltip: 'Add New Room',
+          Align(
+            alignment: Alignment.bottomLeft,
+            child: Padding(
+              padding:
+                  const EdgeInsets.only(left: 50, bottom: 16), // Geser ke kanan
+              child: FloatingActionButton(
+                heroTag: 'back_button',
+                onPressed: () => Navigator.pop(context),
+                backgroundColor: Colors.red,
+                child: Icon(Icons.arrow_back, color: Colors.white),
+                tooltip: 'Go Back',
+              ),
+            ),
           ),
-          SizedBox(height: 16),
-          FloatingActionButton(
-            heroTag: 'back_button',
-            onPressed: () => Navigator.pop(context),
-            backgroundColor: Colors.red,
-            child: Icon(Icons.arrow_back, color: Colors.white),
-            tooltip: 'Go Back',
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: FloatingActionButton(
+                heroTag: 'add_button',
+                onPressed: () => _showAddRoomDialog(),
+                backgroundColor: Colors.green,
+                child: Icon(Icons.add, color: Colors.white),
+                tooltip: 'Add New Room',
+              ),
+            ),
           ),
         ],
       ),

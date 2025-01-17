@@ -57,8 +57,8 @@ class BkuDashboard extends StatelessWidget {
                       crossAxisSpacing: 15,
                       mainAxisSpacing: 15,
                       children: [
-                        _buildManageCard(context, 'Manage Jadwal',
-                            Icons.assignment, JadwalPage()),
+                        _buildManageCard(context, 'Data Booking',
+                            Icons.assignment, JadwalPage(userData: '')),
                         _buildManageCard(context, 'Manage Prospek',
                             Icons.schedule, ProspectPage()),
                       ],
@@ -74,7 +74,8 @@ class BkuDashboard extends StatelessWidget {
         onPressed: () {
           _logout(context);
         },
-        child: Icon(Icons.logout),
+        child: Icon(Icons.logout,
+            color: Colors.white), // Ubah warna ikon menjadi putih
         backgroundColor: Colors.redAccent,
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,

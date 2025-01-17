@@ -1,204 +1,314 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:bookingroom/utils/booking_model.dart';
+import 'package:bookingroom/utils/restApi.dart';
+import 'package:bookingroom/utils/config.dart';
 
 class JadwalPage extends StatefulWidget {
+  final String userData;
+
+  const JadwalPage({Key? key, required this.userData}) : super(key: key);
+
   @override
   _JadwalPageState createState() => _JadwalPageState();
 }
 
 class _JadwalPageState extends State<JadwalPage> {
-  final List<Map<String, String>> _schedules = [
-    {
-      'id_jadwal': '1',
-      'nama_user': 'Alice Johnson',
-      'nomer_ruangan': 'Rungan 40216',
-      'tanggal_jam_waktu_mulai': '2024-12-13 09:00 AM',
-      'tanggal_jam_waktu_selesai': '2024-12-13 10:00 AM',
-      'deskripsi': 'Meeting with the team',
-    },
-    {
-      'id_jadwal': '2',
-      'nama_user': 'Bob Smith',
-      'nomer_ruangan': 'Rungan 40217',
-      'tanggal_jam_waktu_mulai': '2024-12-14 11:00 AM',
-      'tanggal_jam_waktu_selesai': '2024-12-14 12:00 PM',
-      'deskripsi': 'Project presentation',
-    },
-    {
-      'id_jadwal': '3',
-      'nama_user': 'Charlie Brown',
-      'nomer_ruangan': 'Rungan 40218',
-      'tanggal_jam_waktu_mulai': '2024-12-15 01:00 PM',
-      'tanggal_jam_waktu_selesai': '2024-12-15 02:00 PM',
-      'deskripsi': 'Client meeting',
-    },
-    {
-      'id_jadwal': '4',
-      'nama_user': 'David Wilson',
-      'nomer_ruangan': 'Rungan 40219',
-      'tanggal_jam_waktu_mulai': '2024-12-16 03:00 PM',
-      'tanggal_jam_waktu_selesai': '2024-12-16 04:00 PM',
-      'deskripsi': 'Workshop',
-    },
-    {
-      'id_jadwal': '5',
-      'nama_user': 'Eva Green',
-      'nomer_ruangan': 'Rungan 40220',
-      'tanggal_jam_waktu_mulai': '2024-12-17 10:00 AM',
-      'tanggal_jam_waktu_selesai': '2024-12-17 11:00 AM',
-      'deskripsi': 'Team building activity',
-    },
-  ];
+  List<BookingModel> bookings = [];
+  List<BookingModel> filteredBookings = [];
+  String searchQuery = '';
+  String? _selectedRoom;
+  DateTime? _selectedDate;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchBookings();
+  }
+
+  Future<void> _fetchBookings() async {
+    try {
+      String response =
+          await DataService().selectAll(token, project, 'booking', appid);
+      List<dynamic> data = jsonDecode(response);
+      setState(() {
+        bookings = data.map((e) => BookingModel.fromJson(e)).toList();
+        filteredBookings = bookings;
+        isLoading = false;
+      });
+    } catch (error) {
+      print('Error fetching bookings: $error');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void _filterBookings() {
+    setState(() {
+      filteredBookings = bookings.where((booking) {
+        final matchesRoom =
+            _selectedRoom == null || booking.room == _selectedRoom;
+        final matchesDate = _selectedDate == null ||
+            booking.date == _selectedDate!.toIso8601String().split('T').first;
+        final matchesSearch = searchQuery.isEmpty ||
+            booking.desc.toLowerCase().contains(searchQuery.toLowerCase());
+        return matchesRoom && matchesDate && matchesSearch;
+      }).toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Column(
-            children: [
-              // Top 15% dark cyan
-              Container(
-                height: MediaQuery.of(context).size.height * 0.15,
-                color: Colors.black, // Match admin.dart background
-                child: Stack(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black, Colors.grey[900]!],
+          ),
+        ),
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
                   children: [
-                    // Darker circles in the background
-                    Positioned(
-                      left: -50,
-                      top: -50,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.cyan[700]
-                              ?.withOpacity(0.5), // Softer color for dark mode
-                          shape: BoxShape.circle,
-                        ),
+                    Container(
+                      height: MediaQuery.of(context).size.height * 0.15,
+                      decoration: BoxDecoration(
+                        color: Colors.transparent,
                       ),
-                    ),
-                    Positioned(
-                      right: -50,
-                      bottom: -50,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.cyan[700]?.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      right: -50,
-                      top: 100,
-                      child: Container(
-                        width: 150,
-                        height: 150,
-                        decoration: BoxDecoration(
-                          color: Colors.cyan[700]?.withOpacity(0.5),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                    ),
-                    // Centered text "Schedules" with padding
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 40),
-                        child: Text(
-                          'Schedules',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                      child: Stack(
+                        children: [
+                          ...decorativeCircles(),
+                          Align(
+                            alignment: Alignment.bottomCenter,
+                            child: Padding(
+                              padding: const EdgeInsets.only(bottom: 20),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Data Schedules',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 28,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.2,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                    // Search Bar
+                    Container(
+                      padding: EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[850],
+                        borderRadius: BorderRadius.circular(25),
+                        border: Border.all(color: Colors.cyan[700]!, width: 1),
+                      ),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search by description...',
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          border: InputBorder.none,
+                          icon: Icon(Icons.search, color: Colors.cyan[700]),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value;
+                            _filterBookings();
+                          });
+                        },
+                      ),
+                    ),
+                    SizedBox(height: 16),
+                    // Room Filter
+                    Row(
+                      children: [
+                        Expanded(
+                          child: DropdownButtonFormField<String>(
+                            value: _selectedRoom,
+                            decoration: InputDecoration(
+                              prefixIcon: Icon(Icons.meeting_room,
+                                  color: Colors.cyan[700]),
+                              labelText: 'Room',
+                              labelStyle: TextStyle(color: Colors.white),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide:
+                                    BorderSide(color: Colors.cyan[700]!),
+                              ),
+                              filled: true,
+                              fillColor: Colors.grey[850],
+                            ),
+                            items: bookings
+                                .map((booking) => booking.room)
+                                .toSet()
+                                .map((room) {
+                              return DropdownMenuItem<String>(
+                                value: room,
+                                child: Text(room,
+                                    style: TextStyle(color: Colors.white)),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedRoom = newValue;
+                                _filterBookings();
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(width: 16),
+                        Expanded(
+                          child: GestureDetector(
+                            onTap: () => _selectDate(context),
+                            child: InputDecorator(
+                              decoration: InputDecoration(
+                                prefixIcon: Icon(Icons.date_range,
+                                    color: Colors.cyan[700]),
+                                labelText: 'Date',
+                                labelStyle: TextStyle(color: Colors.white),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                  borderSide:
+                                      BorderSide(color: Colors.cyan[700]!),
+                                ),
+                                filled: true,
+                                fillColor: Colors.grey[850],
+                              ),
+                              child: Text(
+                                _selectedDate != null
+                                    ? '${_selectedDate!.day}-${_selectedDate!.month}-${_selectedDate!.year}'
+                                    : 'Select a date',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 16),
+                    IconButton(
+                      icon: Icon(Icons.refresh, color: Colors.white),
+                      onPressed: _fetchBookings,
+                      tooltip: 'Refresh Data',
+                    ),
+                    // Booking List
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredBookings.length,
+                        itemBuilder: (context, index) {
+                          final booking = filteredBookings[index];
+                          return Card(
+                            margin: const EdgeInsets.symmetric(vertical: 8),
+                            color: Colors.grey[850],
+                            elevation: 4,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              contentPadding: EdgeInsets.all(16),
+                              leading:
+                                  Icon(Icons.event, color: Colors.cyan[700]),
+                              title: Text(booking.desc,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.white)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Date: ${booking.date}',
+                                      style:
+                                          TextStyle(color: Colors.grey[400])),
+                                  Text('Start Time: ${booking.start_time}',
+                                      style:
+                                          TextStyle(color: Colors.grey[400])),
+                                  Text('End Time: ${booking.end_time}',
+                                      style:
+                                          TextStyle(color: Colors.grey[400])),
+                                  Text('Room: ${booking.room}',
+                                      style:
+                                          TextStyle(color: Colors.grey[400])),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    // Floating Action Button in the bottom left corner
+                    Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            Navigator.pop(
+                                context); // Navigate back when pressed
+                          },
+                          backgroundColor: Colors.redAccent,
+                          child: Icon(Icons.arrow_back, color: Colors.white),
                         ),
                       ),
                     ),
                   ],
                 ),
               ),
-              // Bottom 85% dark gray
-              Expanded(
-                child: Container(
-                  color: Colors.black87, // Dark background for the list
-                  padding: const EdgeInsets.all(16.0),
-                  child: SingleChildScrollView(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey[850], // Dark card background
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: DataTable(
-                          columns: const [
-                            DataColumn(
-                                label: Text('ID Jadwal',
-                                    style: TextStyle(color: Colors.white))),
-                            DataColumn(
-                                label: Text('Nama User',
-                                    style: TextStyle(color: Colors.white))),
-                            DataColumn(
-                                label: Text('Nomor Ruangan',
-                                    style: TextStyle(color: Colors.white))),
-                            DataColumn(
-                                label: Text('Waktu Mulai',
-                                    style: TextStyle(color: Colors.white))),
-                            DataColumn(
-                                label: Text('Waktu Selesai',
-                                    style: TextStyle(color: Colors.white))),
-                            DataColumn(
-                                label: Text('Deskripsi',
-                                    style: TextStyle(color: Colors.white))),
-                          ],
-                          rows: _schedules.map((schedule) {
-                            return DataRow(cells: [
-                              DataCell(Text(schedule['id_jadwal']!,
-                                  style: TextStyle(color: Colors.white))),
-                              DataCell(Text(schedule['nama_user']!,
-                                  style: TextStyle(color: Colors.white))),
-                              DataCell(Text(schedule['nomer_ruangan']!,
-                                  style: TextStyle(color: Colors.white))),
-                              DataCell(Text(
-                                  schedule['tanggal_jam_waktu_mulai']!,
-                                  style: TextStyle(color: Colors.white))),
-                              DataCell(Text(
-                                  schedule['tanggal_jam_waktu_selesai']!,
-                                  style: TextStyle(color: Colors.white))),
-                              DataCell(Text(schedule['deskripsi']!,
-                                  style: TextStyle(color: Colors.white))),
-                            ]);
-                          }).toList(),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          // Floating Action Button
-          Positioned(
-            left: 16,
-            bottom: 16,
-            child: FloatingActionButton(
-              onPressed: () {
-                Navigator.pop(context); // Navigate back when pressed
-              },
-              backgroundColor:
-                  Colors.redAccent, // Button color matches admin.dart
-              child: Icon(Icons.arrow_back, color: Colors.white),
-            ),
-          ),
-        ],
       ),
     );
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate ?? DateTime.now(),
+      firstDate: DateTime.now().subtract(Duration(days: 365)),
+      lastDate: DateTime.now().add(Duration(days: 365)),
+    );
+    if (picked != null && picked != _selectedDate) {
+      setState(() {
+        _selectedDate = picked;
+        _filterBookings();
+      });
+    }
+  }
+
+  List<Widget> decorativeCircles() {
+    return [
+      Positioned(
+        left: -50,
+        top: -50,
+        child: Container(
+          width: 150,
+          height: 150,
+          decoration: BoxDecoration(
+            color: Colors.cyan[700]?.withOpacity(0.3),
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+      Positioned(
+        right: -30,
+        top: -30,
+        child: Container(
+          width: 100,
+          height: 100,
+          decoration: BoxDecoration(
+            color: Colors.cyan[600]?.withOpacity(0.2),
+            shape: BoxShape.circle,
+          ),
+        ),
+      ),
+    ];
   }
 }
